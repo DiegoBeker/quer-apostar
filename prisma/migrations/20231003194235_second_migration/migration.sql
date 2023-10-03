@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Bet" ALTER COLUMN "status" SET DEFAULT 'PENDING',
+ALTER COLUMN "amountWon" DROP NOT NULL;

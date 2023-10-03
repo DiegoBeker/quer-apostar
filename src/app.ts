@@ -2,6 +2,7 @@ import 'express-async-errors';
 import express, { Express } from 'express';
 import cors from 'cors';
 import { gamesRouter, participantsRouter } from './routers';
+import betsRouter from './routers/bet-router';
 import { loadEnv, connectDb, disconnectDB } from '@/config';
 import { handleApplicationErrors } from '@/middlewares';
 
@@ -14,6 +15,7 @@ app
   .get('/health', (_req, res) => res.send('OK!'))
   .use('/participants', participantsRouter)
   .use('/games', gamesRouter)
+  .use('/bets', betsRouter)
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
