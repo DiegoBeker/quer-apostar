@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/config';
+import { FinishGameParams } from '@/protocols';
 
 async function create(data: Prisma.GameUncheckedCreateInput) {
   return prisma.game.create({
@@ -15,9 +16,19 @@ async function findById(id: number) {
   });
 }
 
+async function finishGame(id: number, data: FinishGameParams) {
+  return prisma.game.update({
+    data: { ...data, isFinished: true },
+    where: {
+      id,
+    },
+  });
+}
+
 const gameRepository = {
   create,
   findById,
+  finishGame,
 };
 
 export default gameRepository;

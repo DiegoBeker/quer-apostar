@@ -24,10 +24,29 @@ async function updateBalance(id: number, balance: number) {
   });
 }
 
+async function processPaymentToParticipants(gameId: number) {
+  await prisma.$queryRaw`
+    UPDATE "Participant" 
+    SET "balance" = "balance" + (
+      SELECT COALESCE(SUM("amountWon"), 0)
+      FROM "Bet"
+      WHERE "Bet"."participantId" = "Participant"."id"
+      AND "Bet"."gameId" = ${gameId}
+    )
+    WHERE "id" IN (
+      SELECT "participantId"
+      FROM "Bet"
+      WHERE "gameId" = ${gameId}
+	    AND "status" = 'WON'
+    );
+  `;
+}
+
 const participantRepository = {
   create,
   findById,
   updateBalance,
+  processPaymentToParticipants,
 };
 
 export default participantRepository;

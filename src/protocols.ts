@@ -1,3 +1,5 @@
+import { type } from 'os';
+
 export type ApplicationError = {
   name: string;
   message: string;
@@ -14,4 +16,20 @@ export type CreateBetParams = {
   amountBet: number;
   gameId: number;
   participantId: number;
+};
+
+export type FinishGameParams = {
+  homeTeamScore: number;
+  awayTeamScore: number;
+};
+
+export type ProcessWinnersParams = {
+  homeTeamScore: number;
+  awayTeamScore: number;
+  totalAmount: number;
+  totalWinnersAmount: number;
+};
+
+export type TotalAmountResult = {
+  totalAmount: number;
 };
