@@ -11,18 +11,18 @@ export async function create(data: Prisma.BetUncheckedCreateInput) {
 
 async function findTotalAmountById(id: number) {
   const result = await prisma.$queryRaw<TotalAmountResult[]>`
-    SELECT SUM("amountBet") AS "totalAmount"
+    SELECT COALESCE(SUM("amountBet"), 0) AS "totalAmount"
     FROM "Bet"
     WHERE "gameId" = ${id};
   `;
 
-  const total = parseInt(result[0].totalAmount.toString());
+  const total = parseInt(result[0].totalAmount.toString()) || 0;
   return total;
 }
 
 async function findTotalWinnersAmountById(id: number, homeTeamScore: number, awayTeamScore: number) {
   const result = await prisma.$queryRaw<TotalAmountResult[]>`
-    SELECT SUM("amountBet") AS "totalAmount"
+    SELECT COALESCE(SUM("amountBet"), 0) AS "totalAmount"
     FROM "Bet"
     WHERE "gameId" = ${id} AND "homeTeamScore" = ${homeTeamScore} AND "awayTeamScore" = ${awayTeamScore}
   `;

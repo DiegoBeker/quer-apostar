@@ -10,3 +10,7 @@ export const finishGameSchema = Joi.object<FinishGameParams>({
   homeTeamScore: Joi.number().integer().positive().greater(0).required(),
   awayTeamScore: Joi.number().integer().positive().greater(0).required(),
 });
+
+export const gameIdSchema = Joi.object({
+  id: Joi.number().integer().positive().greater(0).required(),
+});

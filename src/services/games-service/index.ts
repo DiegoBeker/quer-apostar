@@ -18,8 +18,11 @@ async function finishGame(gameId: number, data: FinishGameParams) {
   const totalWinnersAmount = await betRepository.findTotalWinnersAmountById(gameId, homeTeamScore, awayTeamScore);
 
   await betRepository.processLostBets(gameId, homeTeamScore, awayTeamScore);
+
   await betRepository.processWinnerBets(gameId, { ...data, totalAmount, totalWinnersAmount });
+
   await participantRepository.processPaymentToParticipants(gameId);
+
   return gameRepository.finishGame(gameId, data);
 }
 

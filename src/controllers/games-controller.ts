@@ -13,6 +13,8 @@ export async function finishGame(req: Request, res: Response) {
   const { homeTeamScore, awayTeamScore } = req.body;
   const gameId = parseInt(req.params.id);
 
+  if (isNaN(gameId) || gameId <= 0) throw { name: 'BadRequest', message: 'Id inválido' };
+
   const finishedGame = await gamesService.finishGame(gameId, { homeTeamScore, awayTeamScore });
 
   return res.status(httpStatus.OK).send(finishedGame);
