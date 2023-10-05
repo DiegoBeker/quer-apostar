@@ -1,3 +1,4 @@
+import { forbiddenError, notFoundError } from '@/errors';
 import { CreateGameParams, FinishGameParams } from '@/protocols';
 import betRepository from '@/repositories/bet-repository';
 import gameRepository from '@/repositories/game-repository';
@@ -12,7 +13,9 @@ async function finishGame(gameId: number, data: FinishGameParams) {
 
   const game = await gameRepository.findById(gameId);
 
-  if (game.isFinished) throw { name: 'Forbidden', message: 'Game is already finished' };
+  if (!game) throw notFoundError('Game does not exist');
+
+  if (game.isFinished) throw forbiddenError('Game is already finished');
 
   const totalAmount = await betRepository.findTotalAmountById(gameId);
   const totalWinnersAmount = await betRepository.findTotalWinnersAmountById(gameId, homeTeamScore, awayTeamScore);
@@ -31,7 +34,9 @@ async function findAll() {
 }
 
 async function findGameById(gameId: number) {
-  return await gameRepository.findByIdWithBets(gameId);
+  const game = await gameRepository.findByIdWithBets(gameId);
+  if (!game) throw notFoundError('Game does not exist');
+  return game;
 }
 
 export default {
