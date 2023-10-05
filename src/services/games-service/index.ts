@@ -26,7 +26,12 @@ async function finishGame(gameId: number, data: FinishGameParams) {
   return gameRepository.finishGame(gameId, data);
 }
 
+async function findAll() {
+  return await gameRepository.findAll();
+}
+
 export default {
   createGame,
   finishGame,
+  findAll,
 };

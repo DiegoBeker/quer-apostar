@@ -25,10 +25,15 @@ async function finishGame(id: number, data: FinishGameParams) {
   });
 }
 
+async function findAll() {
+  return await prisma.game.findMany();
+}
+
 const gameRepository = {
   create,
   findById,
   finishGame,
+  findAll,
 };
 
 export default gameRepository;

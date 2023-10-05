@@ -19,3 +19,8 @@ export async function finishGame(req: Request, res: Response) {
 
   return res.status(httpStatus.OK).send(finishedGame);
 }
+
+export async function findAllGames(req: Request, res: Response) {
+  const games = await gamesService.findAll();
+  return res.send(games);
+}
