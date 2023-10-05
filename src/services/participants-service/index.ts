@@ -8,6 +8,11 @@ async function createParticipant(data: CreateParticipantParams) {
   return participantRepository.create(data);
 }
 
+async function findAll() {
+  return participantRepository.findAll();
+}
+
 export default {
   createParticipant,
+  findAll,
 };

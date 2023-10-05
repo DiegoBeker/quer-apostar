@@ -8,3 +8,8 @@ export async function createparticipant(req: Request, res: Response) {
   const participant = await participantService.createParticipant({ name, balance });
   return res.status(httpStatus.CREATED).send(participant);
 }
+
+export async function findAllParticipants(req: Request, res: Response) {
+  const participants = await participantService.findAll();
+  return res.send(participants);
+}

@@ -42,10 +42,15 @@ async function processPaymentToParticipants(gameId: number) {
   `;
 }
 
+async function findAll() {
+  return prisma.participant.findMany({ orderBy: { id: 'asc' } });
+}
+
 const participantRepository = {
   create,
   findById,
   updateBalance,
+  findAll,
   processPaymentToParticipants,
 };
 
