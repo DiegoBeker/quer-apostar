@@ -13,8 +13,6 @@ export async function finishGame(req: Request, res: Response) {
   const { homeTeamScore, awayTeamScore } = req.body;
   const gameId = parseInt(req.params.id);
 
-  if (isNaN(gameId) || gameId <= 0) throw { name: 'BadRequest', message: 'Id inválido' };
-
   const finishedGame = await gamesService.finishGame(gameId, { homeTeamScore, awayTeamScore });
 
   return res.status(httpStatus.OK).send(finishedGame);
@@ -23,4 +21,10 @@ export async function finishGame(req: Request, res: Response) {
 export async function findAllGames(req: Request, res: Response) {
   const games = await gamesService.findAll();
   return res.send(games);
+}
+
+export async function findGameById(req: Request, res: Response) {
+  const gameId = parseInt(req.params.id);
+  const game = await gamesService.findGameById(gameId);
+  return res.send(game);
 }

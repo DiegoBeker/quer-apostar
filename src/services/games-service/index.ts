@@ -30,8 +30,13 @@ async function findAll() {
   return await gameRepository.findAll();
 }
 
+async function findGameById(gameId: number) {
+  return await gameRepository.findByIdWithBets(gameId);
+}
+
 export default {
   createGame,
   finishGame,
   findAll,
+  findGameById,
 };

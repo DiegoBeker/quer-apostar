@@ -16,6 +16,17 @@ async function findById(id: number) {
   });
 }
 
+async function findByIdWithBets(id: number) {
+  return prisma.game.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      Bet: true,
+    },
+  });
+}
+
 async function finishGame(id: number, data: FinishGameParams) {
   return prisma.game.update({
     data: { ...data, isFinished: true },
@@ -34,6 +45,7 @@ const gameRepository = {
   findById,
   finishGame,
   findAll,
+  findByIdWithBets,
 };
 
 export default gameRepository;
