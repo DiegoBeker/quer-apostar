@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import supertest from 'supertest';
 import faker from '@faker-js/faker';
-import { Game, Bet } from '@prisma/client';
+import { Game } from '@prisma/client';
 import { cleanDb } from '../helpers';
 import { createGame } from '../factories/game-factory';
 import { createParticipant } from '../factories/participant-factory';
@@ -96,9 +96,8 @@ describe('POST /games/:id/finish', () => {
 
     it('should respond with status 200 when body is valid', async () => {
       const body = generateValidBody();
-      console.log({ body });
       const createdGame: Game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
-      console.log({ createdGame });
+
       const response = await server.post(`/games/${createdGame.id}/finish`).send(body);
 
       expect(response.status).toBe(httpStatus.OK);
