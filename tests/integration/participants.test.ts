@@ -4,6 +4,7 @@ import faker from '@faker-js/faker';
 import { Participant } from '@prisma/client';
 import { cleanDb } from '../helpers';
 import app, { init } from '@/app';
+import { createParticipant } from '../factories/participant-factory';
 
 beforeAll(async () => {
   await init();
@@ -57,6 +58,39 @@ describe('POST /participants', () => {
       const response = await server.post('/participants').send(body);
 
       expect(response.status).toBe(httpStatus.FORBIDDEN);
+    });
+  });
+});
+
+describe('GET /participants', () => {
+  it('should respond with status 200 when there is no participants', async () => {
+    const response = await server.get('/participants');
+
+    expect(response.status).toBe(httpStatus.OK);
+    expect(response.body).toEqual([]);
+  });
+
+  it('should respond with status 200 whith participants', async () => {
+    const participant = await createParticipant();
+    const participant2 = await createParticipant();
+
+    const response = await server.get('/participants');
+
+    expect(response.status).toBe(httpStatus.OK);
+    expect(response.body).toHaveLength(2);
+    expect(response.body[0]).toEqual({
+      id: participant.id,
+      createdAt: participant.createdAt.toISOString(),
+      updatedAt: participant.updatedAt.toISOString(),
+      name: participant.name,
+      balance: participant.balance,
+    });
+    expect(response.body[1]).toEqual({
+      id: participant2.id,
+      createdAt: participant2.createdAt.toISOString(),
+      updatedAt: participant2.updatedAt.toISOString(),
+      name: participant2.name,
+      balance: participant2.balance,
     });
   });
 });
