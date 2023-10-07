@@ -11,5 +11,5 @@ export async function createparticipant(req: Request, res: Response) {
 
 export async function findAllParticipants(req: Request, res: Response) {
   const participants = await participantService.findAll();
-  return res.send(participants);
+  return res.status(httpStatus.OK).send(participants);
 }

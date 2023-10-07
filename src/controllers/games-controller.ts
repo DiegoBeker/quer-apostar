@@ -20,11 +20,11 @@ export async function finishGame(req: Request, res: Response) {
 
 export async function findAllGames(req: Request, res: Response) {
   const games = await gamesService.findAll();
-  return res.send(games);
+  return res.status(httpStatus.OK).send(games);
 }
 
 export async function findGameById(req: Request, res: Response) {
   const gameId = parseInt(req.params.id);
   const game = await gamesService.findGameById(gameId);
-  return res.send(game);
+  return res.status(httpStatus.OK).send(game);
 }
