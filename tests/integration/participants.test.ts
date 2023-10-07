@@ -1,6 +1,7 @@
 import httpStatus from 'http-status';
 import supertest from 'supertest';
 import faker from '@faker-js/faker';
+import { Participant } from '@prisma/client';
 import { cleanDb } from '../helpers';
 import app, { init } from '@/app';
 
@@ -28,27 +29,34 @@ describe('POST /participants', () => {
 
     expect(response.status).toBe(httpStatus.BAD_REQUEST);
   });
-});
 
-describe('when body is valid', () => {
-  const generateValidBody = (min?: number, max?: number) => ({
-    name: faker.name.findName(),
-    balance: faker.datatype.number({ min: min || 10000, max: max || 1000000 }),
-  });
+  describe('when body is valid', () => {
+    const generateValidBody = (min?: number, max?: number) => ({
+      name: faker.name.findName(),
+      balance: faker.datatype.number({ min: min || 10000, max: max || 1000000 }),
+    });
 
-  it('should respond with status 200 when body is valid', async () => {
-    const body = generateValidBody();
+    it('should respond with status 201 when body is valid', async () => {
+      const body = generateValidBody();
 
-    const response = await server.post('/participants').send(body);
+      const response = await server.post('/participants').send(body);
 
-    expect(response.status).toBe(httpStatus.CREATED);
-  });
+      expect(response.status).toBe(httpStatus.CREATED);
+      expect(response.body).toEqual<Participant>({
+        id: expect.any(Number),
+        name: body.name,
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+        balance: body.balance,
+      });
+    });
 
-  it('should respond with status 200 when balance is not enough', async () => {
-    const body = generateValidBody(1, 999);
+    it('should respond with status 403 when balance is not enough', async () => {
+      const body = generateValidBody(1, 999);
 
-    const response = await server.post('/participants').send(body);
+      const response = await server.post('/participants').send(body);
 
-    expect(response.status).toBe(httpStatus.FORBIDDEN);
+      expect(response.status).toBe(httpStatus.FORBIDDEN);
+    });
   });
 });
