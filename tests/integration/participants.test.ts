@@ -34,7 +34,7 @@ describe('POST /participants', () => {
   describe('when body is valid', () => {
     const generateValidBody = (min?: number, max?: number) => ({
       name: faker.person.fullName(),
-      balance: faker.datatype.number({ min: min || 10000, max: max || 1000000 }),
+      balance: faker.number.int({ min: min || 10000, max: max || 1000000 }),
     });
 
     it('should respond with status 201 when body is valid', async () => {

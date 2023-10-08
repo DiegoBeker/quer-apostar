@@ -18,8 +18,8 @@ const server = supertest(app);
 
 describe('POST /bets', () => {
   const generateValidBody = (gameId: number, participantId: number, amountBet?: number) => ({
-    homeTeamScore: faker.datatype.number(8),
-    awayTeamScore: faker.datatype.number(8),
+    homeTeamScore: faker.number.int(8),
+    awayTeamScore: faker.number.int(8),
     amountBet: amountBet || 1000,
     gameId,
     participantId,

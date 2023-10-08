@@ -83,8 +83,8 @@ describe('POST /games/:id/finish', () => {
 
   describe('when body is valid', () => {
     const generateValidBody = (homeTeamScore?: number, awayTeamScore?: number) => ({
-      homeTeamScore: homeTeamScore || faker.datatype.number(8),
-      awayTeamScore: awayTeamScore || faker.datatype.number(8),
+      homeTeamScore: homeTeamScore || faker.number.int(8),
+      awayTeamScore: awayTeamScore || faker.number.int(8),
     });
 
     it('should respond with status 404 when game does not exist', async () => {
