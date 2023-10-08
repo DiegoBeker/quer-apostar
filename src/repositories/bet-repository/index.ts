@@ -10,23 +10,22 @@ export async function create(data: Prisma.BetUncheckedCreateInput) {
 }
 
 async function findTotalAmountById(id: number) {
-  const result = await prisma.$queryRaw<TotalAmountResult[]>`
-    SELECT COALESCE(SUM("amountBet"), 0) AS "totalAmount"
-    FROM "Bet"
-    WHERE "gameId" = ${id};
+  const query = `
+  SELECT COALESCE(SUM("amountBet"), 0) AS "totalAmount"
+  FROM "Bet"
+  WHERE "gameId" = ${id};
   `;
-
-  const total = parseInt(result[0].totalAmount.toString()) || 0;
+  const result = await prisma.$queryRawUnsafe<TotalAmountResult[]>(query);
+  const total = parseInt(result[0].totalAmount.toString());
   return total;
 }
 
 async function findTotalWinnersAmountById(id: number, homeTeamScore: number, awayTeamScore: number) {
-  const result = await prisma.$queryRaw<TotalAmountResult[]>`
+  const query = `
     SELECT COALESCE(SUM("amountBet"), 0) AS "totalAmount"
     FROM "Bet"
-    WHERE "gameId" = ${id} AND "homeTeamScore" = ${homeTeamScore} AND "awayTeamScore" = ${awayTeamScore}
-  `;
-
+    WHERE "gameId" = ${id} AND "homeTeamScore" = ${homeTeamScore} AND "awayTeamScore" = ${awayTeamScore};`;
+  const result = await prisma.$queryRawUnsafe<TotalAmountResult[]>(query);
   const total = parseInt(result[0].totalAmount.toString());
   return total;
 }
@@ -48,15 +47,20 @@ export async function processLostBets(gameId: number, homeTeamScore: number, awa
 }
 
 export async function processWinnerBets(gameId: number, params: ProcessWinnersParams) {
-  const result = await prisma.$queryRaw`
-    UPDATE "Bet" 
+  const multiplier = calculateMultiplier(params.totalWinnersAmount, params.totalAmount);
+
+  const query = `
+  UPDATE "Bet" 
     SET "status" = 'WON', 
-        "amountWon" = FLOOR("amountBet" * ${calculateMultiplier(params.totalWinnersAmount, params.totalAmount)})
+        "amountWon" = FLOOR("amountBet"::integer * ${multiplier}::float)
     WHERE "gameId"= ${gameId} 
       AND "homeTeamScore" = ${params.homeTeamScore}
       AND "awayTeamScore" = ${params.awayTeamScore}
-      AND "status" = 'PENDING'
+      AND "status" = 'PENDING';
   `;
+
+  const result = await prisma.$executeRawUnsafe(query);
+
   return result;
 }
 

@@ -3,8 +3,8 @@ import supertest from 'supertest';
 import faker from '@faker-js/faker';
 import { Participant } from '@prisma/client';
 import { cleanDb } from '../helpers';
-import app, { init } from '@/app';
 import { createParticipant } from '../factories/participant-factory';
+import app, { init } from '@/app';
 
 beforeAll(async () => {
   await init();

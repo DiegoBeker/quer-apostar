@@ -25,14 +25,14 @@ async function updateBalance(id: number, balance: number) {
 }
 
 async function processPaymentToParticipants(gameId: number) {
-  await prisma.$queryRaw`
-    UPDATE "Participant" 
-    SET "balance" = "balance" + (
+  const query = `
+  UPDATE "Participant" 
+    SET "balance" = "balance"::integer + (
       SELECT COALESCE(SUM("amountWon"), 0)
       FROM "Bet"
       WHERE "Bet"."participantId" = "Participant"."id"
       AND "Bet"."gameId" = ${gameId}
-    )
+    )::integer
     WHERE "id" IN (
       SELECT "participantId"
       FROM "Bet"
@@ -40,6 +40,10 @@ async function processPaymentToParticipants(gameId: number) {
 	    AND "status" = 'WON'
     );
   `;
+
+  const update = await prisma.$executeRawUnsafe(query);
+
+  return update;
 }
 
 async function findAll() {

@@ -13,6 +13,7 @@ async function createBet(data: CreateBetParams) {
   validateBet(participant, game, amountBet);
 
   const balanceToUpdate = participant.balance - amountBet;
+
   await participantRepository.updateBalance(participant.id, balanceToUpdate);
 
   return betRepository.create(data);

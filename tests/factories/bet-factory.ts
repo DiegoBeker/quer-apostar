@@ -1,14 +1,13 @@
-import faker from '@faker-js/faker';
-import { prisma } from '@/config';
+import betsService from '@/services/bets-service';
+import { CreateBetParams } from '@/protocols';
 
-export async function createBet(gameId: number, participantId: number, amountBet: number) {
-  return prisma.bet.create({
-    data: {
-      homeTeamScore: faker.datatype.number(5),
-      awayTeamScore: faker.datatype.number(5),
-      amountBet,
-      gameId,
-      participantId,
-    },
-  });
+export async function createBet(
+  gameId: number,
+  participantId: number,
+  amountBet: number,
+  homeTeamScore: number,
+  awayTeamScore: number,
+) {
+  const data: CreateBetParams = { participantId, gameId, amountBet, homeTeamScore, awayTeamScore };
+  return await betsService.createBet(data);
 }

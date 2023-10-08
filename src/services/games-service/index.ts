@@ -18,6 +18,7 @@ async function finishGame(gameId: number, data: FinishGameParams) {
   if (game.isFinished) throw forbiddenError('Game is already finished');
 
   const totalAmount = await betRepository.findTotalAmountById(gameId);
+
   const totalWinnersAmount = await betRepository.findTotalWinnersAmountById(gameId, homeTeamScore, awayTeamScore);
 
   await betRepository.processLostBets(gameId, homeTeamScore, awayTeamScore);
@@ -26,7 +27,9 @@ async function finishGame(gameId: number, data: FinishGameParams) {
 
   await participantRepository.processPaymentToParticipants(gameId);
 
-  return gameRepository.finishGame(gameId, data);
+  const finish = await gameRepository.finishGame(gameId, data);
+
+  return finish;
 }
 
 async function findAll() {

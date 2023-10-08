@@ -7,6 +7,7 @@ import { createGame } from '../factories/game-factory';
 import { createParticipant } from '../factories/participant-factory';
 import { createBet } from '../factories/bet-factory';
 import app, { init } from '@/app';
+import { calculateMultiplier } from '@/utils/calculate';
 
 beforeAll(async () => {
   await init();
@@ -81,9 +82,9 @@ describe('POST /games/:id/finish', () => {
   });
 
   describe('when body is valid', () => {
-    const generateValidBody = () => ({
-      homeTeamScore: faker.datatype.number(8),
-      awayTeamScore: faker.datatype.number(8),
+    const generateValidBody = (homeTeamScore?: number, awayTeamScore?: number) => ({
+      homeTeamScore: homeTeamScore || faker.datatype.number(8),
+      awayTeamScore: awayTeamScore || faker.datatype.number(8),
     });
 
     it('should respond with status 404 when game does not exist', async () => {
@@ -92,6 +93,16 @@ describe('POST /games/:id/finish', () => {
       const response = await server.post('/games/9999/finish').send(body);
 
       expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it('should respond with status 403 when game is already finished', async () => {
+      const body = generateValidBody();
+      const createdGame: Game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
+
+      await server.post(`/games/${createdGame.id}/finish`).send(body);
+      const response = await server.post(`/games/${createdGame.id}/finish`).send(body);
+
+      expect(response.status).toBe(httpStatus.FORBIDDEN);
     });
 
     it('should respond with status 200 when body is valid', async () => {
@@ -110,6 +121,59 @@ describe('POST /games/:id/finish', () => {
         homeTeamScore: body.homeTeamScore,
         awayTeamScore: body.awayTeamScore,
         isFinished: true,
+      });
+    });
+    it('should respond with status 200 when body is valid', async () => {
+      const game: Game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
+      const participant = await createParticipant();
+      const participant1 = await createParticipant();
+      const participant2 = await createParticipant();
+
+      await createBet(game.id, participant.id, 1000, 1, 1);
+      await createBet(game.id, participant1.id, 2000, 1, 1);
+      const bet2 = await createBet(game.id, participant2.id, 3000, 2, 1);
+      const body = generateValidBody(bet2.homeTeamScore, bet2.awayTeamScore);
+
+      const response = await server.post(`/games/${game.id}/finish`).send(body);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual({
+        id: game.id,
+        createdAt: game.createdAt.toISOString(),
+        updatedAt: expect.any(String),
+        homeTeamName: game.homeTeamName,
+        awayTeamName: game.awayTeamName,
+        homeTeamScore: body.homeTeamScore,
+        awayTeamScore: body.awayTeamScore,
+        isFinished: true,
+      });
+      const totalBetAmount = 6000;
+      const totalWinnersAmount = 3000;
+      const multiplier = calculateMultiplier(totalWinnersAmount, totalBetAmount);
+
+      const response2 = await server.get('/participants');
+
+      expect(response2.status).toBe(httpStatus.OK);
+      expect(response2.body[0]).toEqual({
+        id: participant.id,
+        createdAt: participant.createdAt.toISOString(),
+        updatedAt: expect.any(String),
+        name: participant.name,
+        balance: participant.balance - 1000,
+      });
+      expect(response2.body[1]).toEqual({
+        id: participant1.id,
+        createdAt: participant1.createdAt.toISOString(),
+        updatedAt: expect.any(String),
+        name: participant1.name,
+        balance: participant1.balance - 2000,
+      });
+      expect(response2.body[2]).toEqual({
+        id: participant2.id,
+        createdAt: participant2.createdAt.toISOString(),
+        updatedAt: expect.any(String),
+        name: participant2.name,
+        balance: participant2.balance - 3000 + 3000 * multiplier,
       });
     });
   });
@@ -156,7 +220,6 @@ describe('GET /games', () => {
 
 describe('GET /games/:id', () => {
   it('should respond with status 404 when game does not exist', async () => {
-    // const createdGame = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
     const response = await server.get('/games/99999');
 
     expect(response.status).toBe(httpStatus.NOT_FOUND);
@@ -165,7 +228,7 @@ describe('GET /games/:id', () => {
   it('should respond with status 200 with a game with bets', async () => {
     const game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
     const participant = await createParticipant();
-    const bet = await createBet(game.id, participant.id, 1000);
+    const bet = await createBet(game.id, participant.id, 1000, 1, 1);
 
     const response = await server.get(`/games/${game.id}`);
 
