@@ -1,6 +1,6 @@
 import supertest from 'supertest';
-import faker from '@faker-js/faker';
 import httpStatus from 'http-status';
+import { faker } from '@faker-js/faker/locale/pt_BR';
 import { cleanDb } from '../helpers';
 import { createParticipant } from '../factories/participant-factory';
 import { createGame } from '../factories/game-factory';

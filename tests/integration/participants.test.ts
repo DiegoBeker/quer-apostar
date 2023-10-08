@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import supertest from 'supertest';
-import faker from '@faker-js/faker';
 import { Participant } from '@prisma/client';
+import { faker } from '@faker-js/faker/locale/pt_BR';
 import { cleanDb } from '../helpers';
 import { createParticipant } from '../factories/participant-factory';
 import app, { init } from '@/app';
@@ -33,7 +33,7 @@ describe('POST /participants', () => {
 
   describe('when body is valid', () => {
     const generateValidBody = (min?: number, max?: number) => ({
-      name: faker.name.findName(),
+      name: faker.person.fullName(),
       balance: faker.datatype.number({ min: min || 10000, max: max || 1000000 }),
     });
 

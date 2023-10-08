@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import supertest from 'supertest';
-import faker from '@faker-js/faker';
 import { Game } from '@prisma/client';
+import { faker } from '@faker-js/faker/locale/pt_BR';
 import { cleanDb } from '../helpers';
 import { createGame } from '../factories/game-factory';
 import { createParticipant } from '../factories/participant-factory';
@@ -36,8 +36,8 @@ describe('POST /games', () => {
 
   describe('when body is valid', () => {
     const generateValidBody = () => ({
-      homeTeamName: faker.company.companyName(),
-      awayTeamName: faker.company.companyName(),
+      homeTeamName: faker.company.name(),
+      awayTeamName: faker.company.name(),
     });
 
     it('should respond with status 201 when body is valid', async () => {
