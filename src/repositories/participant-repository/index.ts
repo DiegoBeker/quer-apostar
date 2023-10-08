@@ -1,5 +1,5 @@
-import { Prisma } from '@prisma/client';
-import { prisma } from '@/config';
+import { Prisma } from '../../../node_modules/prisma/prisma-client';
+import { prisma } from '../../config';
 
 async function create(data: Prisma.ParticipantUncheckedCreateInput) {
   return prisma.participant.create({

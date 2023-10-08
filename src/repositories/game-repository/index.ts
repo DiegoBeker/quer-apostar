@@ -1,6 +1,6 @@
-import { Prisma } from '@prisma/client';
-import { prisma } from '@/config';
-import { FinishGameParams } from '@/protocols';
+import { Prisma } from '../../../node_modules/prisma/prisma-client';
+import { prisma } from '../../config';
+import { FinishGameParams } from '../../protocols';
 
 async function create(data: Prisma.GameUncheckedCreateInput) {
   return prisma.game.create({

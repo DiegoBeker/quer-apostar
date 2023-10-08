@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { CreateGameParams, FinishGameParams } from '@/protocols';
+import { CreateGameParams, FinishGameParams } from '../protocols';
 
 export const createGameSchema = Joi.object<CreateGameParams>({
   homeTeamName: Joi.string().required(),

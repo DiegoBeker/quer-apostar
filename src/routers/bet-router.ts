@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { createBet } from '@/controllers/bets-controller';
-import { validateBody } from '@/middlewares';
-import { createBetSchema } from '@/schemas';
+import { createBet } from '../controllers/bets-controller';
+import { validateBody } from '../middlewares';
+import { createBetSchema } from '../schemas';
 
 const betsRouter = Router();
 

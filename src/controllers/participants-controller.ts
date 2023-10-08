@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
-import participantService from '@/services/participants-service';
+import participantService from '../services/participants-service';
 
 export async function createparticipant(req: Request, res: Response) {
   const { name, balance } = req.body;

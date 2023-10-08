@@ -3,8 +3,8 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import { gamesRouter, participantsRouter } from './routers';
 import betsRouter from './routers/bet-router';
-import { loadEnv, connectDb, disconnectDB } from '@/config';
-import { handleApplicationErrors } from '@/middlewares';
+import { loadEnv, connectDb, disconnectDB } from './config';
+import { handleApplicationErrors } from './middlewares';
 
 loadEnv();
 

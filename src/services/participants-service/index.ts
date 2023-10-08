@@ -1,5 +1,5 @@
-import { Participant } from '@prisma/client';
-import participantRepository from '@/repositories/participant-repository';
+import { Participant } from '../../../node_modules/prisma/prisma-client';
+import participantRepository from '../../repositories/participant-repository';
 
 export type CreateParticipantParams = Pick<Participant, 'name' | 'balance'>;
 

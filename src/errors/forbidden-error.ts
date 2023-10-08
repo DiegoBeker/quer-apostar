@@ -1,4 +1,4 @@
-import { ApplicationError } from '@/protocols';
+import { ApplicationError } from '../protocols';
 
 export function forbiddenError(message: string): ApplicationError {
   return {

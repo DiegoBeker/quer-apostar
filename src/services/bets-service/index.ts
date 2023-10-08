@@ -1,8 +1,8 @@
-import { CreateBetParams } from '@/protocols';
-import betRepository from '@/repositories/bet-repository';
-import gameRepository from '@/repositories/game-repository';
-import participantRepository from '@/repositories/participant-repository';
-import { validateBet } from '@/utils/validateBet';
+import { CreateBetParams } from '../../protocols';
+import betRepository from '../../repositories/bet-repository';
+import gameRepository from '../../repositories/game-repository';
+import participantRepository from '../../repositories/participant-repository';
+import { validateBet } from '../..//utils/validateBet';
 
 async function createBet(data: CreateBetParams) {
   const { participantId, gameId, amountBet } = data;

@@ -1,7 +1,7 @@
-import { Prisma } from '@prisma/client';
-import { prisma } from '@/config';
-import { ProcessWinnersParams, TotalAmountResult } from '@/protocols';
-import { calculateMultiplier } from '@/utils/calculate';
+import { Prisma } from '../../../node_modules/prisma/prisma-client';
+import { prisma } from '../../config';
+import { ProcessWinnersParams, TotalAmountResult } from '../../protocols';
+import { calculateMultiplier } from '../../utils/calculate';
 
 export async function create(data: Prisma.BetUncheckedCreateInput) {
   return prisma.bet.create({

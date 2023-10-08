@@ -1,5 +1,5 @@
-import { Game, Participant } from '@prisma/client';
-import { forbiddenError, notFoundError } from '@/errors';
+import { Game, Participant } from '../../node_modules/prisma/prisma-client';
+import { forbiddenError, notFoundError } from '../errors';
 
 export function validateBet(participant: Participant, game: Game, amountBet: number) {
   if (!participant) throw notFoundError('Participant does not exist');

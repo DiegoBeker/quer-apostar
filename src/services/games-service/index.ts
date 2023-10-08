@@ -1,8 +1,8 @@
-import { forbiddenError, notFoundError } from '@/errors';
-import { CreateGameParams, FinishGameParams } from '@/protocols';
-import betRepository from '@/repositories/bet-repository';
-import gameRepository from '@/repositories/game-repository';
-import participantRepository from '@/repositories/participant-repository';
+import { forbiddenError, notFoundError } from '../../errors';
+import { CreateGameParams, FinishGameParams } from '../../protocols';
+import betRepository from '../../repositories/bet-repository';
+import gameRepository from '../..//repositories/game-repository';
+import participantRepository from '../..//repositories/participant-repository';
 
 async function createGame(data: CreateGameParams) {
   return gameRepository.create(data);
