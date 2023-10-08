@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres
+    container_name: db
+    restart: always #container reinicia se morrer
+    ports:
+      - 5433:5432
+    env_file:
+      - .env #configurar POSTGRES_USER, POSTGRES_PASSWORD e POSTGRES_DB
+    volumes:
+      - pg:/var/lib/postgresql/data
+  nodeapp:
+    container_name: node_app
+    build: .
+    ports:
+      - 1234:4000
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+volumes:
+  pg: # volume para os postgres
