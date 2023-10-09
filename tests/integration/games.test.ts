@@ -8,6 +8,7 @@ import { createParticipant } from '../factories/participant-factory';
 import { createBet } from '../factories/bet-factory';
 import app, { init } from '@/app';
 import { calculateMultiplier } from '@/utils/calculate';
+import { prisma } from '@/config';
 
 beforeAll(async () => {
   await init();
@@ -97,9 +98,8 @@ describe('POST /games/:id/finish', () => {
 
     it('should respond with status 403 when game is already finished', async () => {
       const body = generateValidBody();
-      const createdGame: Game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
+      const createdGame: Game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' }, true);
 
-      await server.post(`/games/${createdGame.id}/finish`).send(body);
       const response = await server.post(`/games/${createdGame.id}/finish`).send(body);
 
       expect(response.status).toBe(httpStatus.FORBIDDEN);
@@ -123,7 +123,7 @@ describe('POST /games/:id/finish', () => {
         isFinished: true,
       });
     });
-    it('should respond with status 200 when body is valid', async () => {
+    it('should respond with status 200 when body is valid and update balance', async () => {
       const game: Game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
       const participant = await createParticipant();
       const participant1 = await createParticipant();
@@ -151,27 +151,26 @@ describe('POST /games/:id/finish', () => {
       const totalWinnersAmount = 3000;
       const multiplier = calculateMultiplier(totalWinnersAmount, totalBetAmount);
 
-      const response2 = await server.get('/participants');
+      const participants = await prisma.participant.findMany({ orderBy: { id: 'asc' } });
 
-      expect(response2.status).toBe(httpStatus.OK);
-      expect(response2.body[0]).toEqual({
+      expect(participants[0]).toEqual({
         id: participant.id,
-        createdAt: participant.createdAt.toISOString(),
-        updatedAt: expect.any(String),
+        createdAt: participant.createdAt,
+        updatedAt: expect.any(Date),
         name: participant.name,
         balance: participant.balance - 1000,
       });
-      expect(response2.body[1]).toEqual({
+      expect(participants[1]).toEqual({
         id: participant1.id,
-        createdAt: participant1.createdAt.toISOString(),
-        updatedAt: expect.any(String),
+        createdAt: participant1.createdAt,
+        updatedAt: expect.any(Date),
         name: participant1.name,
         balance: participant1.balance - 2000,
       });
-      expect(response2.body[2]).toEqual({
+      expect(participants[2]).toEqual({
         id: participant2.id,
-        createdAt: participant2.createdAt.toISOString(),
-        updatedAt: expect.any(String),
+        createdAt: participant2.createdAt,
+        updatedAt: expect.any(Date),
         name: participant2.name,
         balance: participant2.balance - 3000 + 3000 * multiplier,
       });
