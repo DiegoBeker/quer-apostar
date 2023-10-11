@@ -5,6 +5,7 @@ import { cleanDb } from '../helpers';
 import { createParticipant } from '../factories/participant-factory';
 import { createGame } from '../factories/game-factory';
 import app, { init } from '@/app';
+import { prisma } from '@/config';
 
 beforeAll(async () => {
   await init();
@@ -35,7 +36,7 @@ describe('POST /bets', () => {
 
   it('should respond with status 404 when game does not exist', async () => {
     const participant = await createParticipant();
-    const fakeGameId = 4;
+    const fakeGameId = 9999999;
     const body = generateValidBody(fakeGameId, participant.id);
     const response = await server.post('/bets').send(body);
 
@@ -44,14 +45,14 @@ describe('POST /bets', () => {
 
   it('should respond with status 404 when participant does not exist', async () => {
     const game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
-    const fakeId = 4;
+    const fakeId = 9999999;
     const body = generateValidBody(game.id, fakeId);
     const response = await server.post('/bets').send(body);
 
     expect(response.status).toBe(httpStatus.NOT_FOUND);
   });
 
-  it('should respond with status 403 when balance is not enough for bet', async () => {
+  it('should respond with status 403 when balance is not enough for the bet', async () => {
     const game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
     const participant = await createParticipant();
     const HIGH_AMOUNT = 5000000;
@@ -62,19 +63,16 @@ describe('POST /bets', () => {
   });
 
   it('should respond with status 403 when game is already finished', async () => {
-    const game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
+    const finishedGame = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' }, true);
     const participant = await createParticipant();
-    const body = generateValidBody(game.id, participant.id);
-    const finishBody = { homeTeamScore: 2, awayTeamScore: 0 };
-
-    await server.post(`/games/${game.id}/finish`).send(finishBody);
+    const body = generateValidBody(finishedGame.id, participant.id);
 
     const response = await server.post('/bets').send(body);
 
     expect(response.status).toBe(httpStatus.FORBIDDEN);
   });
 
-  it('should respond with status 201 when finish game is successfull', async () => {
+  it('should respond with status 201 when bet is created', async () => {
     const game = await createGame({ homeTeamName: 'Corinthians', awayTeamName: 'Palmeiras' });
     const participant = await createParticipant();
     const body = generateValidBody(game.id, participant.id);
@@ -82,5 +80,26 @@ describe('POST /bets', () => {
     const response = await server.post('/bets').send(body);
 
     expect(response.status).toBe(httpStatus.CREATED);
+    expect(response.body).toEqual({
+      id: expect.any(Number),
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+      homeTeamScore: body.homeTeamScore,
+      awayTeamScore: body.awayTeamScore,
+      amountBet: body.amountBet,
+      gameId: game.id,
+      participantId: participant.id,
+      status: 'PENDING',
+      amountWon: null,
+    });
+    const participantCheck = await prisma.participant.findUnique({ where: { id: participant.id } });
+
+    expect(participantCheck).toEqual({
+      id: expect.any(Number),
+      name: participant.name,
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+      balance: participant.balance - body.amountBet,
+    });
   });
 });
