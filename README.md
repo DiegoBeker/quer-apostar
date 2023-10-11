@@ -66,8 +66,25 @@ npm start
 
 ## How to run Docker Image
 
+Create a network
 ```bash
-docker run -d --name my-container -p 4040:4000 diegobeker/querapostar
+docker network create --driver bridge qa-network
+```
+
+Create a volume
+
+```bash
+docker volume create qa-volume
+```
+
+Run a postgres container inside the created network and using the created volume
+
+```bash
+docker run --name pg-querapostar --network=qa-network -e POSTGRES_PASSWORD=postgres -p 5433:5432 -v qa-volume:/var/lib/postgresql/data -d postgres
+```
+
+```bash
+docker run -d --name querapostar --network=qa-network -e POSTGRES_HOST=pg-querapostar -p 4040:4000 diegobeker/quer-apostar-quanto
 ```
 
 Check it out on localhost/4040/health
